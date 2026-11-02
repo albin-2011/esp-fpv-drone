@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FPV FC Configurator</title>
+  <style>
+    :root {
+      --bg: #0a0d12;
+      --panel: #121a22;
+      --accent: #34d399;
+      --accent2: #60a5fa;
+      --text: #e5e7eb;
+      --muted: #94a3b8;
+      --danger: #f87171;
+    }
+
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      margin: 0;
+      padding: 24px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 20px;
+    }
+
+    .panel {
+      background: var(--panel);
+      border-radius: 12px;
+      padding: 16px;
+      box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+    }
+
+    input, select, button {
+      width: 100%;
+      padding: 10px;
+      border-radius: 8px;
+      border: 1px solid #334155;
+      background: #0f172a;
+      color: white;
+      margin-top: 8px;
+    }
+
+    button {
+      background: linear-gradient(135deg, #34d399, #3b82f6);
+      border: none;
+      cursor: pointer;
+    }
+
+    .danger {
+      background: linear-gradient(135deg, #f87171, #ef4444);
+    }
+
+    .meter {
+      width: 100%;
+      height: 12px;
+      background: #1f2937;
+      border-radius: 8px;
+      overflow: hidden;
+    }
+
+    .meter > span {
+      display: block;
+      height: 100%;
+      background: linear-gradient(135deg, #34d399, #60a5fa);
+    }
+  </style>
+</head>
+<body>
+  <h1>FPV FC Configurator</h1>
+
+  <div class="grid">
+    <div class="panel">
+      <h2>Receiver</h2>
+      <div id="rxChannels">Channels: --</div>
+      <div id="auxStatus">AUX: --</div>
+    </div>
+
+    <div class="panel">
+      <h2>IMU</h2>
+      <div class="meter"><span id="gyroMeter" style="width: 20%"></span></div>
+      <div id="imuStatus">Gyro: idle</div>
+    </div>
+
+    <div class="panel">
+      <h2>Modes</h2>
+      <select>
+        <option>Acro</option>
+        <option>Horizon</option>
+        <option>Angle</option>
+      </select>
+    </div>
+
+    <div class="panel">
+      <h2>Motor Test</h2>
+      <button>Arm & Test</button>
+      <button class="danger">Disarm</button>
+    </div>
+
+    <div class="panel">
+      <h2>PID</h2>
+      <label>Roll P <input type="number" value="42" /></label>
+      <label>Pitch P <input type="number" value="42" /></label>
+      <label>Yaw P <input type="number" value="45" /></label>
+    </div>
+
+    <div class="panel">
+      <h2>Rates</h2>
+      <label>RC Rate <input type="number" value="1.12" step="0.01" /></label>
+      <label>Super Rate <input type="number" value="0.72" step="0.01" /></label>
+      <label>Expo <input type="number" value="0.00" step="0.01" /></label>
+    </div>
+  </div>
+
+  <script>
+    async function fetchStatus() {
+      const res = await fetch('/api/status');
+      const json = await res.json();
+      document.getElementById('imuStatus').textContent = `Gyro: ${JSON.stringify(json.gyro)}`;
+    }
+
+    setInterval(fetchStatus, 500);
+  </script>
+</body>
+</html>
